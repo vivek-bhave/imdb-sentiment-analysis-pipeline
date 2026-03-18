@@ -1,0 +1,87 @@
+Metric Analysis – Logistic Regression (IMDB Sentiment Classification)
+
+In this project, the goal of the model is not only to achieve high accuracy,
+but to correctly identify positive and negative reviews so that the results
+can be used for real-world analysis.
+
+Consider a real-world scenario where a movie producer wants to analyze
+audience reviews to understand why some viewers are satisfied and why
+some are unsatisfied. For this purpose, correctly detecting negative reviews
+is very important, because negative reviews contain information about
+problems in the movie such as story issues, acting problems, pacing,
+or direction mistakes.
+
+Therefore, accuracy alone is not enough. Precision, recall, and confusion
+matrix must also be analyzed.
+
+
+Confusion Matrix:
+
+[[3495 471]
+ [385 3649]]
+
+Where:
+3495 = correctly predicted negative reviews
+3649 = correctly predicted positive reviews
+471  = negative reviews predicted as positive
+385  = positive reviews predicted as negative
+
+
+Analysis of Recall (Negative Class):
+
+Recall for negative class = 0.88
+
+This means that 88% of actual negative reviews are correctly detected,
+but 12% of negative reviews are missed.
+
+In real-world analysis, missing negative reviews is a serious problem,
+because those reviews contain complaints from the audience.
+If these complaints are not detected, the producer may think the movie
+is performing better than it actually is.
+
+As a result, the same problems may remain in future movies because
+the producer never saw those negative opinions.
+
+So, low recall for negative class can lead to loss of important feedback
+and persistent problems in future productions.
+
+
+Analysis of Precision (Negative Class):
+
+Precision for negative class = 0.90
+
+This means that when the model predicts a review as negative,
+90% of them are actually negative, but 10% are actually positive.
+
+This introduces noise in the negative review analysis.
+
+For example, some positive reviews may contain mixed words like
+"slow but emotional" or "different but interesting", and the model
+may classify them as negative.
+
+If these reviews are included in negative analysis, the producer may
+draw incorrect conclusions about what the audience disliked.
+
+So, low precision causes incorrect signals in the analysis.
+
+
+Importance of Precision and Recall Together:
+
+For review analysis, both precision and recall are important.
+
+Low recall → some negative reviews are missed → real problems not detected  
+Low precision → positive reviews included in negative set → wrong analysis  
+
+Therefore, even though the accuracy of the model is high (0.893),
+precision and recall must also be considered to understand how reliable
+the model is for real-world decision making.
+
+
+Conclusion:
+
+The Logistic Regression model performs well with balanced precision
+and recall for both classes, which makes it suitable for sentiment
+analysis where the goal is to study audience satisfaction and
+dissatisfaction in detail, not just to achieve high accuracy.
+
+F1 score is used when precision and recall both are important and we need a single metric to evaluate the balance between them. It is especially useful when precision and recall show different performance and we cannot judge the model using only one of them.
