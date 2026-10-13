@@ -1,84 +1,665 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sentiment Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMDb Insights | Sentiment Intelligence</title>
+
     <style>
+        :root {
+            --bg: #080d18;
+            --border: rgba(148, 163, 184, 0.16);
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --blue: #60a5fa;
+            --cyan: #22d3ee;
+            --green: #34d399;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            font-family: Inter, -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", sans-serif;
+            background:
+                radial-gradient(ellipse at 10% 0%, #14284c 0%, transparent 40%),
+                radial-gradient(ellipse at 95% 40%, #10283a 0%, transparent 32%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        button, select, input {
+            font: inherit;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 12px;
-            width: 400px;
-            text-align: center;
-            backdrop-filter: blur(10px);
+            width: min(1000px, 92%);
+            margin: auto;
+            padding: 30px 0 24px;
         }
 
-        h2 {
+        /* Header */
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            font-size: 23px;
+            box-shadow: 0 5px 24px #2563eb30;
+        }
+
+        .brand h2 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: -0.4px;
+        }
+
+        .brand p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid #34d39935;
+            border-radius: 30px;
+            color: #86efac;
+            background: #34d3990b;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px #34d39990;
+        }
+
+        /* Hero */
+
+        .hero {
+            text-align: center;
+            padding: 48px 0 35px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: var(--cyan);
+            background: #22d3ee0d;
+            border: 1px solid #22d3ee25;
+            border-radius: 30px;
+            padding: 7px 13px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            margin: 19px 0 13px;
+            font-size: clamp(32px, 5vw, 49px);
+            line-height: 1.13;
+            letter-spacing: -1.8px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa, #22d3ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            max-width: 570px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* Centered analysis workspace */
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 680px);
+            justify-content: center;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .panel {
+            min-width: 0;
+            padding: 30px;
+            background: linear-gradient(
+                145deg,
+                rgba(23, 35, 57, 0.92),
+                rgba(13, 22, 38, 0.96)
+            );
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 18px 50px #00000018;
+        }
+
+        .panel-heading {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .step {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: #3b82f620;
+            color: var(--blue);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .panel-heading h3 {
+            margin: 1px 0 5px;
+            font-size: 19px;
+        }
+
+        .panel-heading p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* Form */
+
+        .field {
             margin-bottom: 20px;
         }
 
-        textarea {
+        label {
+            display: block;
+            margin-bottom: 9px;
+            color: #dbe5f3;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        select, input[type="file"] {
             width: 100%;
-            height: 120px;
-            border-radius: 8px;
-            border: none;
-            padding: 10px;
-            resize: none;
-            font-size: 14px;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            outline: none;
+            background: #0b1424;
+            color: var(--text);
+            font-size: 13px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            background-color: #00c6ff;
+        select:focus, input[type="file"]:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px #60a5fa18;
+        }
+
+        select option {
+            background: #111a2b;
             color: white;
-            font-size: 16px;
+        }
+
+        .upload-area {
+            padding: 22px 16px;
+            text-align: center;
+            background: #0b1424;
+            border: 1px dashed #475569;
+            border-radius: 12px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .upload-area:focus-within {
+            border-color: var(--cyan);
+            background: #102033;
+        }
+
+        .upload-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            margin: 0 0 12px;
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        .upload-area input {
+            padding: 9px;
+            font-size: 12px;
+            background: #111a2b;
+        }
+
+        .hint {
+            margin: 9px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 23px 0;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: var(--border);
+        }
+
+        /* Buttons */
+
+        .btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 9px;
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 750;
+            text-align: center;
+            text-decoration: none;
             cursor: pointer;
+            transition: transform 0.2s, background 0.2s,
+                        border-color 0.2s;
         }
 
-        button:hover {
-            background-color: #0072ff;
+        .btn:hover {
+            transform: translateY(-1px);
         }
 
-        .result {
-            margin-top: 20px;
-            font-size: 20px;
+        .btn-primary {
+            color: #07111e;
+            background: linear-gradient(100deg, #60a5fa, #22d3ee);
+            box-shadow: 0 5px 22px #22d3ee15;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(100deg, #93c5fd, #67e8f9);
+        }
+
+        .btn-sample {
+            color: #a7f3d0;
+            background: #10b98112;
+            border-color: #34d39935;
+        }
+
+        .btn-sample:hover {
+            background: #10b98122;
+            border-color: #34d39970;
+        }
+
+        .btn-download {
+            color: #cbd5e1;
+            background: transparent;
+            border-color: #334155;
+            margin-top: 10px;
+        }
+
+        .btn-download:hover {
+            background: #ffffff08;
+            border-color: #64748b;
+        }
+
+        /* Results */
+
+        .results-panel {
+            max-width: 680px;
+            width: 100%;
+            margin: 22px auto 0;
+            padding: 25px;
+            background: #111a2b;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            animation: appear 0.35s ease-out;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 17px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .results-header h3 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .results-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .results-list {
+            display: grid;
+            gap: 10px;
+            padding: 0;
+            margin: 19px 0 0;
+            list-style: none;
+        }
+
+        .results-list li {
+            position: relative;
+            padding: 14px 15px 14px 39px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #ffffff03;
+            color: #dbe5f3;
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .results-list li::before {
+            content: "↗";
+            position: absolute;
+            left: 14px;
+            top: 14px;
+            color: var(--cyan);
             font-weight: bold;
         }
 
+        .error {
+            max-width: 680px;
+            margin: 22px auto 0;
+            padding: 16px;
+            border: 1px solid #f871713d;
+            border-radius: 11px;
+            background: #ef444410;
+            color: #fecaca;
+            font-size: 13px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        /* Footer */
+
+        .footer {
+            max-width: 680px;
+            margin: 32px auto 0;
+            padding-top: 19px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 92%;
+                padding-top: 20px;
+            }
+
+            .hero {
+                padding: 38px 0 28px;
+            }
+
+            .hero h1 {
+                letter-spacing: -1px;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+
+            .footer {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
+
 <body>
-
 <div class="container">
-    <h2>🎬 IMDB Sentiment Analyzer</h2>
 
-    <form method="POST">
-        <textarea name="review" placeholder="Write your movie review..."></textarea>
-        <br>
-        <button type="submit">Analyze</button>
-    </form>
-
-    {% if prediction %}
-        <div class="result">
-            Result: {{ prediction }}
+    <!-- Header -->
+    <header class="navbar">
+        <div class="brand">
+            <div class="brand-icon">🎬</div>
+            <div>
+                <h2>IMDb Insights</h2>
+                <p>Sentiment Intelligence Platform</p>
+            </div>
         </div>
-    {% endif %}
-</div>
 
+        <div class="status">
+            <span class="status-dot"></span>
+            ML Engine
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <span class="eyebrow">Machine Learning · NLP</span>
+
+        <h1>
+            Understand what audiences<br>
+            <span class="gradient-text">really think.</span>
+        </h1>
+
+        <p>
+            Transform movie reviews into meaningful insights.
+            Identify positive experiences, uncover criticism,
+            and discover the words driving audience sentiment.
+        </p>
+    </section>
+
+    <!-- Centered analysis form -->
+    <main class="workspace">
+        <section class="panel">
+
+            <div class="panel-heading">
+                <div class="step">01</div>
+                <div>
+                    <h3>Analyze your reviews</h3>
+                    <p>Configure your analysis and choose a data source.</p>
+                </div>
+            </div>
+
+            <form method="POST"
+                  enctype="multipart/form-data"
+                  id="analysis-form">
+
+                <div class="field">
+                    <label for="sentiment">Target sentiment</label>
+
+                    <select name="sentiment" id="sentiment" required>
+                        <option value="positive"
+                            {% if request.form.get('sentiment', 'positive') == 'positive' %}
+                            selected
+                            {% endif %}>
+                            Positive reviews
+                        </option>
+
+                        <option value="negative"
+                            {% if request.form.get('sentiment') == 'negative' %}
+                            selected
+                            {% endif %}>
+                            Negative reviews
+                        </option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="mode">Analysis strategy</label>
+
+                    <select name="mode" id="mode" required>
+                        <option value="manual"
+                            {% if request.form.get('mode', 'manual') == 'manual' %}
+                            selected
+                            {% endif %}>
+                            Top Reviews — Find the strongest reviews
+                        </option>
+
+                        <option value="auto"
+                            {% if request.form.get('mode') == 'auto' %}
+                            selected
+                            {% endif %}>
+                            Common Reasons — Explore contributing words
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit"
+                        name="use_sample"
+                        value="1"
+                        class="btn btn-sample">
+                    ✦ &nbsp; Explore Sample Dataset
+                </button>
+
+                <a href="{{ url_for('download_sample') }}"
+                   class="btn btn-download">
+                    ↓ &nbsp; Download Sample CSV
+                </a>
+
+                <div class="divider">OR USE YOUR OWN DATA</div>
+
+                <div class="field">
+                    <label for="file">Upload movie reviews</label>
+
+                    <div class="upload-area">
+                        <div class="upload-icon">📂</div>
+                        <p>Select a CSV file from your device</p>
+
+                        <input type="file"
+                               id="file"
+                               name="file"
+                               accept=".csv">
+
+                        <p class="hint">
+                            CSV format · Required column:
+                            <strong>content</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Run Sentiment Analysis &nbsp; →
+                </button>
+
+                <p class="hint" style="text-align:center; margin-top:12px;">
+                    Your CSV should contain one review per row.
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <!-- Error messages -->
+    {% if error %}
+        <section class="error">
+            <strong>⚠ Analysis could not be completed</strong>
+            <div>{{ error }}</div>
+        </section>
+    {% endif %}
+
+    <!-- Analysis results -->
+    {% if results %}
+        <section class="results-panel">
+            <div class="results-header">
+                <div class="step">02</div>
+                <div>
+                    <h3>Analysis results</h3>
+
+                    {% if mode == "manual" %}
+                        <p>Top reviews for the selected sentiment.</p>
+                    {% elif mode == "auto" %}
+                        <p>
+                            Influential words and mapped themes
+                            from the selected reviews.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <ul class="results-list">
+                {% for r in results %}
+                    <li>{{ r }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <span>IMDb Insights · Sentiment Analysis</span>
+        <span>Powered by Logistic Regression &amp; TF-IDF</span>
+    </footer>
+
+</div>
 </body>
 </html>
